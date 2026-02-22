@@ -42,6 +42,34 @@ const initDb = async () => {
   `);
 };
 
+
+
+app.get("/", (req: Request, res: Response) => {
+  res.send("Hello next level developers!");
+});
+
+app.post("/users", async(req: Request, res: Response)=> {
+ const {name, email} = req.body;
+ try{
+  const result = await pool.query(`INSERT INTO users(name, email) VALUES($1, $2) RETURNING *`,[name, email]);
+  res.status(201).json({
+    success: true,
+    message: "data inserted",
+    data: result.rows[0]
+  })
+
+ }catch(err: any){
+   res.status(500).json({
+    success: false,
+    message: err.message,
+   })
+ }
+
+  res.status(201).json({
+    message: "hello"
+  })
+})
+
 const start = async () => {
   try {
     await initDb();
@@ -54,7 +82,3 @@ const start = async () => {
 };
 
 start();
-
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello next level developers!");
-});
