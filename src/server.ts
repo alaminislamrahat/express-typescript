@@ -87,6 +87,35 @@ app.get("/users", async(req: Request, res: Response) => {
   }
 })
 
+app.get("/users/:id", async(req: Request, res: Response) => {
+  console.log(req.params);
+
+  try{
+    const result = await pool.query(`SELECT * FROM users WHERE id = $1`,[req.params.id])
+    console.log(result.rows)
+
+    if(result.rows.length === 0){
+      res.status(404).json({
+        success: false,
+        message: "Data not found"
+      })
+    }
+    else{
+      res.status(200).json({
+        success: true,
+        message: "User fetch successfully",
+        data: result.rows[0]
+      })
+    }
+  }catch(err:any){
+    res.status(500).json({
+      success: false,
+      message: err.message,
+      details: err
+    })
+  }
+})
+
 const start = async () => {
   try {
     await initDb();
