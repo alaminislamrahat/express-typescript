@@ -48,6 +48,8 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Hello next level developers!");
 });
 
+
+//users crud
 app.post("/users", async(req: Request, res: Response)=> {
  const {name, email} = req.body;
  try{
@@ -65,9 +67,24 @@ app.post("/users", async(req: Request, res: Response)=> {
    })
  }
 
-  res.status(201).json({
-    message: "hello"
-  })
+})
+
+app.get("/users", async(req: Request, res: Response) => {
+  try{
+    const result = await pool.query(`SELECT * FROM users`);
+    res.status(200).json({
+      success: true,
+      message: "users retrived successfully",
+      data: result.rows
+    })
+
+  }catch(err:any){
+    res.status(500).json({
+      success: false,
+      message: err.message,
+      details: err
+    })
+  }
 })
 
 const start = async () => {
