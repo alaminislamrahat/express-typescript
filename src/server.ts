@@ -50,6 +50,8 @@ app.get("/", (req: Request, res: Response) => {
 
 
 //users crud
+
+//!post route
 app.post("/users", async(req: Request, res: Response)=> {
  const {name, email} = req.body;
  try{
@@ -69,6 +71,7 @@ app.post("/users", async(req: Request, res: Response)=> {
 
 })
 
+//! Get route
 app.get("/users", async(req: Request, res: Response) => {
   try{
     const result = await pool.query(`SELECT * FROM users`);
@@ -87,6 +90,8 @@ app.get("/users", async(req: Request, res: Response) => {
   }
 })
 
+
+//! single get  route
 app.get("/users/:id", async(req: Request, res: Response) => {
   console.log(req.params);
 
@@ -115,6 +120,70 @@ app.get("/users/:id", async(req: Request, res: Response) => {
     })
   }
 })
+
+//! Update route
+app.put("/users/:id", async(req: Request, res: Response) => {
+  
+  
+  const {name, email} = req.body;
+
+  try{
+    const result = await pool.query(`UPDATE users SET name=$1, email=$2 WHERE id=$3 RETURNING *`,[name, email, req.params.id])
+    console.log(result.rows)
+
+    if(result.rows.length === 0){
+      res.status(404).json({
+        success: false,
+        message: "Data not found"
+      })
+    }
+    else{
+      res.status(200).json({
+        success: true,
+        message: "User updated successfully",
+        data: result.rows[0]
+      })
+    }
+  }catch(err:any){
+    res.status(500).json({
+      success: false,
+      message: err.message,
+      details: err
+    })
+  }
+})
+
+
+//? delete route
+app.delete("/users/:id", async(req: Request, res: Response) => {
+  console.log(req.params);
+
+  try{
+    const result = await pool.query(`DELETE FROM users WHERE id=$1`,[req.params.id])
+    console.log(result.rows)
+
+    if(result.rowCount === 0){
+      res.status(404).json({
+        success: false,
+        message: "Data not found"
+      })
+    }
+    else{
+      res.status(200).json({
+        success: true,
+        message: "User deleted successfully",
+        data: null
+      })
+    }
+  }catch(err:any){
+    res.status(500).json({
+      success: false,
+      message: err.message,
+      details: err
+    })
+  }
+})
+
 
 const start = async () => {
   try {
