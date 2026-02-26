@@ -3,6 +3,7 @@ import config from "./config";
 import initDb, { pool } from "./config/db";
 import logger from "./middleware/logger";
 import { userRoutes } from "./modules/user/user.routes";
+import { authRoute } from "./modules/auth/auth.routes";
 
 
 const app = express();
@@ -12,39 +13,16 @@ app.use(express.json());
 
 
 
-//middle ware
-
-
-
-
 
 app.get("/", logger,(req: Request, res: Response) => {
   res.send("Hello next level developers!");
 });
 
 
-//users crud
-
-//!post route
 
 app.use("/users", userRoutes)
 
-
-
-//! Get route
-// app.get("/users", )
-
-
-//! single get  route
-// app.get("/users/:id", )
-
-//! Update route
-// app.put("/users/:id", )
-
-
-//? delete route
-// app.delete("/users/:id", )
-
+app.use("/auth", authRoute)
 
 //todos crud
 //post
